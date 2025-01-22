@@ -1,27 +1,33 @@
+# Nombre del pipeline
 name: CI workflow
-
+# Eventos con los que se ejecuta el pipeline o workflow
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+# Tareas que se ejecutan en el pipeline
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container: python:3.9-slim
+    runs-on: ubuntu-latest # Sistema operativo sobre el que se ejecutan las acciones
+    container: python:3.9-slim # Versión de la imagen docker, según la aplicación
     steps:
       - name: Checkout
+        id: init_workflow
         uses: actions/checkout@v3
 
       - name: Install dependencies
+        id: install_deps
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Lint with flake8
+        id: lint_code
         run: |
           flake8 service --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
       # Este comando es para ejecutar los unitTest del proyecto. Se ejecute mediante "nose"
       - name: Run unit tests with nose
+        id: unit_test
         run: nosetests -v --with-spec --spec-color --with-coverage --cover-package=app
